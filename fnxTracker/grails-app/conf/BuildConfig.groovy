@@ -38,6 +38,7 @@ grails.project.dependency.resolution = {
         // runtime 'mysql:mysql-connector-java:5.1.22'
 		compile "com.google.oauth-client:google-oauth-client:1.16.0-rc"
 		compile "com.google.api-client:google-api-client:1.16.0-rc"
+		compile "com.google.http-client:google-http-client-jackson2:1.11.0-beta"
     }
 
     plugins {

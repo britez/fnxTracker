@@ -1,11 +1,32 @@
 package ar.com.globallogic.service
 
-import com.google.api.client.auth.oauth2.AuthorizationCodeFlow
+import java.awt.Desktop
+
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
+import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse
+import com.google.api.client.http.HttpTransport
+import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.JsonFactory
+import com.google.api.client.json.jackson2.JacksonFactory
 
 class GoogleService {
 
     def auth() {
-		AuthorizationCodeFlow.newAuthorizationUrl()
+		HttpTransport httpTransport = new NetHttpTransport();
+		JsonFactory jsonFactory = new JacksonFactory();
+
+		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(httpTransport, jsonFactory, CLIENT_ID, CLIENT_SECRET, Arrays.asList(DriveScopes.DRIVE))
+        .setAccessType("offline")
+        .setApprovalPrompt("force").build();
+
+    String url = flow.newAuthorizationUrl().setRedirectUri(REDIRECT_URI).build();
+    System.out.println("Enter authorization code:");
+    Desktop.getDesktop().browse(new URI(url));
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    String code = br.readLine();
+
+    GoogleTokenResponse response = flow.newTokenRequest(code).setRedirectUri(REDIRECT_URI).execute();
+	response.getAccessToken()
 		
 	}
 //		// Generate the URL to which we will direct users
@@ -45,5 +66,4 @@ class GoogleService {
 //		// Refresh a token (SHOULD ONLY BE DONE WHEN ACCESS TOKEN EXPIRES)
 //		access.refreshToken();
 //		System.out.println("Original Token: " + accessToken + " New Token: " + access.getAccessToken());
-    }
 }
