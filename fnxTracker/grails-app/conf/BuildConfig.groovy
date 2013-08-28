@@ -33,12 +33,9 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.jboss.com/maven2/"
     }
     dependencies {
-        // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
-
-        // runtime 'mysql:mysql-connector-java:5.1.22'
-		compile "com.google.oauth-client:google-oauth-client:1.16.0-rc"
 		compile "com.google.api-client:google-api-client:1.16.0-rc"
 		compile "com.google.http-client:google-http-client-jackson2:1.11.0-beta"
+		compile "com.google.gdata:core:1.47.1"
     }
 
     plugins {

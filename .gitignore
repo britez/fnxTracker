@@ -1,6 +1,9 @@
+/fnxTracker/target-eclipse/*
+.gitignore
 .project
 .classpath/
 .metadata/
 target/
 .settings/
 .log
+
