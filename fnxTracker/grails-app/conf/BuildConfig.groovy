@@ -31,6 +31,8 @@ grails.project.dependency.resolution = {
 		compile "com.google.api-client:google-api-client:1.16.0-rc"
 		compile "com.google.http-client:google-http-client-jackson2:1.11.0-beta"
 		compile "com.google.gdata:core:1.47.1"
+		//compile "com.google.oauth-client:google-oauth-client:1.16.0-rc"
+		compile "com.google.apis:google-api-services-oauth2:v2-rev48-1.16.0-rc"
     }
 
     plugins {

@@ -1,17 +1,20 @@
 package ar.com.globallogic.service
 
+import java.io.IOException;
+
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.commons.GrailsApplication;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse
-import com.google.api.client.http.HttpTransport
+import com.google.api.client.http.HttpRequest
+import com.google.api.client.http.HttpRequestInitializer
 import com.google.api.client.http.javanet.NetHttpTransport
-import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.services.oauth2.Oauth2
+import com.google.api.services.oauth2.model.Userinfo
+import com.google.gdata.client.spreadsheet.SpreadsheetQuery
 import com.google.gdata.client.spreadsheet.SpreadsheetService
-import com.google.gdata.data.spreadsheet.SpreadsheetEntry
 import com.google.gdata.data.spreadsheet.SpreadsheetFeed
 
 /**
@@ -26,19 +29,22 @@ class GoogleService {
 	private static final log = LogFactory.getLog(this)
 	
 	/** The spreadsheet SCOPE */
-	final String SCOPE = "https://spreadsheets.google.com/feeds"
+	final String SPREADSHEET_SCOPE = "https://spreadsheets.google.com/feeds"
+	
+	/** The EMAIL SCOPE */
+	final String EMAIL_SCOPE = "https://www.googleapis.com/auth/userinfo#email"
 	
 	/** The app's client secret */
-	final String CLIENT_SECRET = grailsApplication.config.google.client_secret
+	final String CLIENT_SECRET = "9vMO2377dZqikiuxjf2qubZL"
 	
 	/** The app's client id */
-	final String CLIENT_ID = grailsApplication.config.google.client_id
+	final String CLIENT_ID = "119451786372-t5c5ba52gb77thuv60cd1fa6j4ue5c1h.apps.googleusercontent.com"
 	
 	/** The app's redirection URI */
-	final String REDIRECT_URI = grailsApplication.config.grails.serverURL + "/auth/code"
+	final String REDIRECT_URI = "http://localhost:8080/fnxTracker" + "/auth/code"
 
 	/** Creates a URL to allow the END-USER to grant persmissions */
-    def getAuthUrl() {
+    String getAuthUrl() {
 		log.info("Obteniendo url para dar permisos de accesso a la aplicación")
 	    this.buildGoogleFlow().newAuthorizationUrl().setRedirectUri(REDIRECT_URI).build()
     }
@@ -49,29 +55,51 @@ class GoogleService {
 		this.buildGoogleFlow().newTokenRequest(code).setRedirectUri(REDIRECT_URI).execute()
 	}
 	
-	def listDocs(final String accessToken){
-		SpreadsheetService service = new SpreadsheetService("yourAppName")
-		service.setHeader("Authorization", "Bearer " + accessToken)
-		URL metafeedUrl = new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full")
-		SpreadsheetFeed feed = service.getFeed(metafeedUrl, SpreadsheetFeed.class)
+	/** Retrieves the email by the given token */ 
+	String getEmail(final String accessToken){
+		Oauth2 userInfoService = new Oauth2.Builder(new NetHttpTransport(), new JacksonFactory(), new GoogleHttpRequestInitializer(accessToken)).setApplicationName("theApiName").build();
+		log.info("Obteniendo el mail para el cliente actual")
+		userInfoService.userinfo().get().execute().getEmail();
+	}
+
+	/** Builds a GoogleAuthorizationCodeFlow */
+	private GoogleAuthorizationCodeFlow buildGoogleFlow(){
+		log.info("Creando CodeFlow de google")
+		def flow = new GoogleAuthorizationCodeFlow.Builder(new NetHttpTransport(),new JacksonFactory(),CLIENT_ID,CLIENT_SECRET,[SPREADSHEET_SCOPE,EMAIL_SCOPE])
+		flow.setAccessType("offline").setApprovalPrompt("force").build()
+	}
+	
+	/**
+	 * This class is responsible to set the 
+	 * authorization header with the correct access token
+	 * 
+	 * @author Maximiliano Britez
+	 */
+	private class GoogleHttpRequestInitializer implements HttpRequestInitializer {
 		
+		/** The given accessToken */ 
+		private String accessToken; 
 		
-		List spreadsheets = feed.getEntries()
-		for (int i = 0; i < spreadsheets.size(); i++) {
-			SpreadsheetEntry entry = spreadsheets.get(i)
-			System.out.println("\t" + entry.getTitle().getPlainText())
+		/**
+		 * Default conturctor to store the 
+		 * access token
+		 * 
+		 * @param accessToken - {@link String}
+		 */
+		GoogleHttpRequestInitializer(final String accessToken){
+			this.accessToken = accessToken;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void initialize(HttpRequest req) throws IOException {
+			req.getHeaders().put("Authorization", ["Bearer " + accessToken])
 		}
 		
 	}
-	
-	/** Builds a GoogleAuthorizationCodeFlow */
-	private def buildGoogleFlow(){
-		log.info("Creando CodeFlow de google")
-		def flow = new GoogleAuthorizationCodeFlow.Builder(new NetHttpTransport(),new JacksonFactory(),CLIENT_ID,CLIENT_SECRET,[SCOPE])
-		flow.setAccessType("offline").setApprovalPrompt("force").build()
-	}
-
-	// Refresh a token (SHOULD ONLY BE DONE WHEN ACCESS TOKEN EXPIRES)
-	//access.refreshToken();
-	//System.out.println("Original Token: " + accessToken + " New Token: " + access.getAccessToken());
 }
+// Refresh a token (SHOULD ONLY BE DONE WHEN ACCESS TOKEN EXPIRES)
+//access.refreshToken();
+//System.out.println("Original Token: " + accessToken + " New Token: " + access.getAccessToken());
