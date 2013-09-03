@@ -6,24 +6,41 @@
 	</head>
 	<body>
 	
+	    <div class="page-header">
+    		<h1>Cargar horas <small>ingrese la cantidad de horas para la tarea que quieras.</small></h1>
+    	</div>
+    	
+    	<g:if test="${flash.message}">
+    	<div class="alert alert-success">
+  			<button type="button" class="close" data-dismiss="alert">&times;</button>
+  			<strong>OK!</strong>
+  			${flash.message}
+		</div>
+    	</g:if>
+	
 		<g:form class="form-horizontal" action="log">
+		
   			<div class="control-group">
+  			
     			<label class="control-label" for="inputEmail">Fecha</label>
+    			
+   				<input type="hidden" name="date" id="date" value="${new Date().format("dd/MM/yyyy")}"/>
+   				
     			<div class="controls">
-    				<input type="hidden" name="date" value="${new Date().format("dd/MM/yyyy")}"/>
 					<div class="btn-group">
-			  			<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+			  			<a class="btn dropdown-toggle" id="dateSelect" data-toggle="dropdown" href="#">
 			  				${new Date().format("dd/MM/yyyy")}
 			    			<span class="caret"></span>
 			  			</a>
 			  			<ul class="dropdown-menu">
 			    			<g:each in="${days}">
-								<li>${it.format("dd/MM/yyyy")}</li>
+								<li><a href="#" class="selectable">${it.format("dd/MM/yyyy")}</a></li>
 							</g:each>
 			  			</ul>
 					</div>
     			</div>
   			</div>
+  			
 			<div class="control-group">
     			<label class="control-label" for="hours">Cant Horas</label>
     			<div class="controls">
@@ -42,6 +59,16 @@
   				<button type="button" class="btn">Cancelar</button>
 			</div>
 		</g:form>
+		
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$(".selectable").click(function(){
+					var date = $(this).html();
+					$("#date").val(date);
+					$("#dateSelect").html(date + "<span class='caret'></span>");
+				});
+			});
+		</script>
 	
 		
 	</body>

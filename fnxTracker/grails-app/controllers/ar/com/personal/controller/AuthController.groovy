@@ -18,17 +18,17 @@ class AuthController {
 	 * url.	
 	 */
     def index() {
-		redirect url:this.googleService.getAuthUrl()
+		redirect(url:googleService.getAuthUrl(), params:[redirect_url:params.redirect_url])
 	}
 	
 	/**
 	 * Request the session token and refresh token
 	 */
 	def code() {
-		GoogleTokenResponse tokenResponse = this.googleService.getTokenResponse(params.code)
+		GoogleTokenResponse tokenResponse = googleService.getTokenResponse(params.code)
 		session["accessToken"] = tokenResponse.getAccessToken()
 		session["refreshToken"] = tokenResponse.getRefreshToken()
 		
-		redirect uri:"/"
+		redirect url: params.redirect_url
 	}
 }

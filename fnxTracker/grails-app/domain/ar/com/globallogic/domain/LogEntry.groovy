@@ -4,7 +4,7 @@ class LogEntry {
 
 	String task
 	
-	Date day
+	String date
 	
 	Integer hours
 	
