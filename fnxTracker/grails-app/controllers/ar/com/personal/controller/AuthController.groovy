@@ -18,7 +18,8 @@ class AuthController {
 	 * url.	
 	 */
     def index() {
-		redirect(url:googleService.getAuthUrl(), params:[redirect_url:params.redirect_url])
+		session["redirectUrl"] = params.redirectUrl
+		redirect(url:googleService.getAuthUrl())
 	}
 	
 	/**
@@ -29,6 +30,6 @@ class AuthController {
 		session["accessToken"] = tokenResponse.getAccessToken()
 		session["refreshToken"] = tokenResponse.getRefreshToken()
 		
-		redirect url: params.redirect_url
+		redirect url: session["redirectUrl"]
 	}
 }

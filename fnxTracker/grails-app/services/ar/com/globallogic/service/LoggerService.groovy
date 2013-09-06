@@ -1,12 +1,8 @@
 package ar.com.globallogic.service
 
-import java.util.Date;
-import java.util.List;
-
 import ar.com.globallogic.domain.LogEntry
 
-import com.google.gdata.data.spreadsheet.SpreadsheetEntry
-import com.google.gdata.data.spreadsheet.WorksheetEntry
+import com.google.gdata.data.spreadsheet.ListEntry
 
 class LoggerService {
 	
@@ -26,12 +22,14 @@ class LoggerService {
 	List<LogEntry> list(final String accessToken) {
 		def result = []
 		spreadsheetService.list(accessToken).each {
-			def item = new LogEntry()
-			def elements = it.getCustomElements()
-			item.task = elements.getValue("Tarea")
-			item.hours = Integer.valueOf(elements.getValue("Horas"))
-			item.date = elements.getValue("Fecha")
-			result << item
+			if(filter(it)){
+				def elements = it.getCustomElements()
+				LogEntry item = new LogEntry()
+				item.task = elements.getValue("Tarea")
+				item.hours = Integer.valueOf(elements.getValue("Horas"))
+				item.date = elements.getValue("Fecha")
+				result << item
+			}
 		}
 		result
 	}
@@ -45,5 +43,11 @@ class LoggerService {
 			result << new Date() - i
 		}
 		result.reverse()
+	}
+	
+	private Boolean filter(final ListEntry it){
+		def elements = it.getCustomElements()
+		Date itemDate = new Date().parse("dd/MM/yyyy",elements.getValue("Fecha"))
+		return new Date()-6 < itemDate && new Date() + 1 > itemDate
 	}
 }

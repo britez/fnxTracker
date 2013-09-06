@@ -23,7 +23,7 @@ import com.google.gdata.data.spreadsheet.WorksheetFeed
 class SpreadsheetService {
 
 	/** The SHEET_NAME */	
-	private final String SHEET_NAME = "TCP002 - Carga de horas"
+	private final String SHEET_NAME = "TEST"
 	
 	/** The APP_NAME */
 	private final String APP_NAME = "Fnx Tracker"

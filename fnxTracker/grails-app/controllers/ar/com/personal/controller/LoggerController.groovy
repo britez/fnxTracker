@@ -15,23 +15,15 @@ class LoggerController {
     def index() {
 		def accessToken = session["accessToken"]
 		if(accessToken == null){
-			return redirect(controller: "auth", action: "index", params: [redirect_uri:BASE_URL+"logger/log"])
+			return redirect(controller: "auth", action: "index", params: [redirectUrl:BASE_URL+"logger/index"])
 		}
-		[days: loggerService.getLastDays()]
+		[days: loggerService.getLastDays(), logs:loggerService.list(accessToken)]
 	}
 	
 	def log(){
 		def accessToken = session["accessToken"]
 		loggerService.logTask(accessToken, new LogEntry(params))
 		flash.message = "Horas logeadas correctamente"
-		render(view:"index", model:[days:loggerService.getLastDays()])
-	}
-	
-	def list() {
-		def accessToken = session["accessToken"]
-		if(accessToken == null){
-			return redirect(controller: "auth", action: "index", params: [redirect_uri:BASE_URL+"logger/list"])
-		}
-		[logs:loggerService.list(accessToken)]
+		render(view:"index", model:[days:loggerService.getLastDays(), logs:loggerService.list(accessToken)])
 	}
 }
