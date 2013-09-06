@@ -34,6 +34,16 @@ class LoggerService {
 		result
 	}
 	
+	Integer getPercent(final String accessToken) {
+		Integer totalHours = 0
+		this.list(accessToken).each {
+			totalHours+=it.hours
+		}
+		if (totalHours == 0) return 0
+		if (totalHours > 48) return 100 
+		((8 * 6) / totalHours) * 100
+	}
+	
 	/**
 	 * Retrieves the Last 5 days
 	 */

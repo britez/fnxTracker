@@ -17,7 +17,7 @@ class LoggerController {
 		if(accessToken == null){
 			return redirect(controller: "auth", action: "index", params: [redirectUrl:BASE_URL+"logger/index"])
 		}
-		[days: loggerService.getLastDays(), logs:loggerService.list(accessToken)]
+		[days: loggerService.getLastDays(), logs:loggerService.list(accessToken), percent: loggerService.getPercent(accessToken)]
 	}
 	
 	def log(){

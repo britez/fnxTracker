@@ -10,6 +10,11 @@
     		<h1>Cargar horas <small>ingrese la cantidad de horas para la tarea que quieras.</small></h1>
     	</div>
     	
+    	<h6>Progreso de horas: ${percent}%</h6>
+		<div class="progress progress-striped active">
+  			<div class="bar" style="width: ${percent}%;"></div>
+		</div>
+    	
 		<g:if test="${flash.message}">
 		  	<div class="alert alert-success">
 				<button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -21,7 +26,7 @@
     	<div class="container-fluid">
   			<div class="row-fluid">
     			<div class="span5">
-    			
+    				<h6>Formulario de carga de horas</h6>		
 					<g:form class="form-horizontal" action="log">
 					
 			  			<div class="control-group">
@@ -67,6 +72,7 @@
     			</div>
     			
     			<div class="span5">
+    				<h6>Horas cargadas</h6>		
     				<table class="table table-bordered">
 			    		<thead>
 			    			<tr>
